@@ -19,9 +19,6 @@ public class Runner {
         aiValues[2] = 0;
         aiValues[3] = 0;
         log.info("Starting new game!");
-        for (int i = 0; i < aiValues.length; i++) {
-            log.info("Player " + i + " AI value: " + aiValues[i]);
-        }
 
         int[] totalWinsPerSeat = new int[4];
         totalWinsPerSeat[0] = 0;

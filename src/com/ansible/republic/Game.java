@@ -33,10 +33,12 @@ public class Game {
 
         // one per round
         for (ProposedCard card : cards) {
+        	// rotate flipped card
             int randomRotates = (int) (Math.random() * 3);
             for (int i = 0; i < randomRotates; i++)
                 card.rotate();
             log.info("New round! Card is: " + card.toString());
+            
             if (players.get(0).hand.size() < 2) {
                 // new set
                 log.info("New set of 3 starts now! Refreshing hands.");
