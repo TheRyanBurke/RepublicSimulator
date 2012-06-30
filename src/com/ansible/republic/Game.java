@@ -34,14 +34,14 @@ public class Game {
         // one per round
         for (ProposedCard card : cards) {
         	// rotate flipped card
-            int randomRotates = (int) (Math.random() * 3);
+            int randomRotates = (int) (Math.random() * 4);
             for (int i = 0; i < randomRotates; i++)
                 card.rotate();
-            log.info("New round! Card is: " + card.toString());
+            log.debug("New round! Card is: " + card.toString());
             
             if (players.get(0).hand.size() < 2) {
                 // new set
-                log.info("New set of 3 starts now! Refreshing hands.");
+                log.debug("New set of 3 starts now! Refreshing hands.");
                 for (Player p : players)
                     p.cleanupRound();
             }
@@ -64,20 +64,20 @@ public class Game {
                 }
             }
             if (roundVoteSum > 0) {
-                log.info("Card passes! Final vote was: " + (roundVoteSum - 1));
+                log.debug("Card passes! Final vote was: " + (roundVoteSum - 1));
                 scoreCard(card);
             } else {
-                log.info("Card doesn't pass! Final vote was: "
+                log.debug("Card doesn't pass! Final vote was: "
                         + (roundVoteSum - 1));
             }
         }
 
         // game over
         int[] winners = getWinners();
-        log.info("Game over! Winners:");
+        log.debug("Game over! Winners:");
         for (int i = 0; i < winners.length; i++) {
             if (winners[i] > 0)
-                log.info("Player " + i);
+                log.debug("Player " + i);
         }
         return winners;
     }

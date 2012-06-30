@@ -58,7 +58,7 @@ public class Player {
         populateHand();
         score = 0;
 
-        log.info("New Player registered with ai: " + ai);
+        log.debug("New Player registered with ai: " + ai);
     }
 
     void populateHand() {
@@ -81,7 +81,7 @@ public class Player {
 
         current = hand.get(pickIndex);
 
-        log.info("Player " + seat + " chooses action: "
+        log.debug("Player " + seat + " chooses action: "
                 + current.type.toString());
         return current.type;
     }
@@ -94,11 +94,17 @@ public class Player {
     int selectCard(ProposedCard proposal, int seat) {
         // logic for card selection
         if (ai == 0) {
-            int rand = (int) (Math.random() * hand.size());
-            return rand;
+            return anyRandomHandCard();
         } else if (ai == 1) {
             return 0;
+        } else if (ai == 2) {
+        	if(isHighestValueFacingMe(proposal, seat)) {
+        		if(isActionAvailable(ACTION.YAY))
+        			return indexOfAction(ACTION.YAY);
+        	}
+        	return anyRandomHandCard();
         } else if (ai >= 100 && ai < 1000) {
+        
             // three digit order
             char[] order = Integer.toString(ai).toCharArray();
             for (int i = 0; i < order.length; i++) {
@@ -111,6 +117,32 @@ public class Player {
 
         }
         return 0;
+    }
+    
+    int indexOfAction(ACTION action) {
+    	for(int i = 0; i < hand.size(); i++) {
+    		if(hand.get(i).type.equals(action))
+    			return i;
+    	}
+    	log.error("Shouldn't have called indexOfAction on an ACTION not currently in hand: " + action.toString());
+    	return 0;
+    }
+    
+    boolean isActionAvailable(ACTION action) {
+    	for(ActionCard card : hand) {
+    		if(card.type.equals(action))
+    			return true;
+    	}
+    	return false;
+    }
+    
+    boolean isHighestValueFacingMe(ProposedCard card, int seat) {
+    	return card.getHighest() == card.getValueOfSeat(seat);    	
+    }
+    
+    int anyRandomHandCard() {
+    	int rand = (int) (Math.random() * hand.size());
+        return rand;
     }
 
     boolean handContainsAction(int actionVal) {
@@ -143,7 +175,7 @@ public class Player {
             break;
         }
         score += gainPoints;
-        log.info("Player " + seat + " scored " + gainPoints
+        log.debug("Player " + seat + " scored " + gainPoints
                 + " points. Now at " + score);
     }
 
