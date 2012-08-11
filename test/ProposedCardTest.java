@@ -68,4 +68,16 @@ public class ProposedCardTest {
 		assertTrue(c.getRotatedValueOfSeat(2) == 4);
 		assertTrue(c.getRotatedValueOfSeat(3) == 1);
 	}
+
+	@Test
+	public void testEquality() {
+		ProposedCard a = new ProposedCard(1, 2, 3, 4);
+		ProposedCard b = new ProposedCard(1, 2, 3, 4);
+		ProposedCard c = new ProposedCard(1, 2, 3, 5);
+
+		assertTrue(a.equals(b));
+		assertTrue(b.equals(a));
+		assertTrue(!a.equals(c));
+
+	}
 }

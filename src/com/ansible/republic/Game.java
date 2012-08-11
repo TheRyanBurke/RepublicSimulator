@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -35,6 +36,11 @@ public class Game {
         List<ACTION> playerActions;
 
         int roundVoteSum;
+
+		for (Entry<String, Integer> e : metrics.entrySet())
+			e.setValue(0);
+
+		Collections.shuffle(cards);
 
         // one per round
         for (ProposedCard card : cards) {
@@ -68,12 +74,10 @@ public class Game {
                     card.rotate();
                 }
             }
+
             if (roundVoteSum > 0) {
                 log.debug("Card passes! Final vote was: " + (roundVoteSum - 1));
-				if (metrics.containsKey(card.id)) {
-					metrics.put(card.id, metrics.get(card.id) + 1);
-				} else
-					metrics.put(card.id, 1);
+				metrics.put(card.id, metrics.get(card.id) + 1);
                 scoreCard(card);
             } else {
                 log.debug("Card doesn't pass! Final vote was: "
@@ -127,25 +131,32 @@ public class Game {
      * Add cards with values UP LEFT DOWN RIGHT
      */
     void populateCards() {
-        cards.add(new ProposedCard(0, 3, 1, 0));
-        cards.add(new ProposedCard(0, 3, 1, 0));
-
-        cards.add(new ProposedCard(1, 0, 3, 2));
-        cards.add(new ProposedCard(1, 0, 3, 2));
-
-        cards.add(new ProposedCard(2, 3, 0, 1));
-        cards.add(new ProposedCard(2, 3, 0, 1));
-
-        cards.add(new ProposedCard(0, 2, 0, 2));
-        cards.add(new ProposedCard(0, 2, 0, 2));
-
-        cards.add(new ProposedCard(2, 0, 0, 2));
-        cards.add(new ProposedCard(2, 0, 0, 2));
-
-		cards.add(new ProposedCard(2, 5, 2, 2));
-		cards.add(new ProposedCard(2, 5, 2, 2));
-
-        Collections.shuffle(cards);
+		// cards.add(new ProposedCard(0, 3, 1, 0));
+		// cards.add(new ProposedCard(0, 3, 1, 0));
+		//
+		// cards.add(new ProposedCard(1, 0, 3, 2));
+		// cards.add(new ProposedCard(1, 0, 3, 2));
+		//
+		// cards.add(new ProposedCard(2, 3, 0, 1));
+		// cards.add(new ProposedCard(2, 3, 0, 1));
+		//
+		// cards.add(new ProposedCard(0, 2, 0, 2));
+		// cards.add(new ProposedCard(0, 2, 0, 2));
+		//
+		// cards.add(new ProposedCard(2, 0, 0, 2));
+		// cards.add(new ProposedCard(2, 0, 0, 2));
+		//
+		// cards.add(new ProposedCard(2, 5, 2, 2));
+		// cards.add(new ProposedCard(2, 5, 2, 2));
+		while (cards.size() < 12) {
+			ProposedCard pc = new ProposedCard((int) (Math.random() * 4),
+					(int) (Math.random() * 4), (int) (Math.random() * 4),
+					(int) (Math.random() * 4));
+			if (!cards.contains(pc)) {
+				cards.add(pc);
+				metrics.put(pc.id, 0);
+			}
+		}
     }
 
 }

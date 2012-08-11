@@ -23,7 +23,8 @@ public class Runner {
 		aiValues[2] = 9;
 		aiValues[3] = 9;
 
-		int simulations = 1000;
+		int simulations = 10000;
+		int simulationsPerSet = 1000;
 
         log.info("Starting new game!");
 
@@ -33,21 +34,38 @@ public class Runner {
         totalWinsPerSeat[2] = 0;
         totalWinsPerSeat[3] = 0;
 
-		Map<String, Integer> overallMetrics = new HashMap<String, Integer>();
+		int ties = 0;
+		Map<String, Integer> cardToPasses = new HashMap<String, Integer>();
+		Map<String, Integer> cardToAppearances = new HashMap<String, Integer>();
 
 		for (int i = 0; i < simulations; i++) {
             Game g = new Game(aiValues);
-            int[] winners = g.executeGame();
-            totalWinsPerSeat[0] += winners[0];
-            totalWinsPerSeat[1] += winners[1];
-            totalWinsPerSeat[2] += winners[2];
-            totalWinsPerSeat[3] += winners[3];
-			for (Entry<String, Integer> e : g.metrics.entrySet()) {
-				if (overallMetrics.containsKey(e.getKey()))
-					overallMetrics.put(e.getKey(),
-							overallMetrics.get(e.getKey()) + e.getValue());
-				else
-					overallMetrics.put(e.getKey(), e.getValue());
+
+
+
+			for (int j = 0; j < simulationsPerSet; j++) {
+				int[] winners = g.executeGame();
+				totalWinsPerSeat[0] += winners[0];
+				totalWinsPerSeat[1] += winners[1];
+				totalWinsPerSeat[2] += winners[2];
+				totalWinsPerSeat[3] += winners[3];
+
+				if (isGameTie(winners))
+					ties++;
+
+				for (Entry<String, Integer> e : g.metrics.entrySet()) {
+					if (cardToPasses.containsKey(e.getKey()))
+						cardToPasses.put(e.getKey(),
+								cardToPasses.get(e.getKey()) + e.getValue());
+					else
+						cardToPasses.put(e.getKey(), e.getValue());
+
+					if (cardToAppearances.containsKey(e.getKey()))
+						cardToAppearances.put(e.getKey(),
+								cardToAppearances.get(e.getKey()) + 1);
+					else
+						cardToAppearances.put(e.getKey(), 1);
+				}
 			}
         }
 
@@ -56,12 +74,21 @@ public class Runner {
         log.info("Player 1: " + totalWinsPerSeat[1]);
         log.info("Player 2: " + totalWinsPerSeat[2]);
         log.info("Player 3: " + totalWinsPerSeat[3]);
+		double tiePercentage = ((double) ties
+				/ (double) (simulations * simulationsPerSet) * 100);
+		log.info("Number of tied rounds: " + ties + " = " + tiePercentage + "%");
 		log.info("Card results");
-		for (Entry<String, Integer> e : overallMetrics.entrySet()) {
-			double winPercent = e.getValue().doubleValue() / 2000 * 100;
+		for (Entry<String, Integer> e : cardToPasses.entrySet()) {
+			double winPercent = e.getValue().doubleValue()
+					/ cardToAppearances.get(e.getKey()) * 100;
 			log.info("Card " + e.getKey() + " -- Passes: " + e.getValue()
+					+ " -- Appearances: " + cardToAppearances.get(e.getKey())
 					+ " = " + winPercent + "%");
 		}
     }
+
+	static boolean isGameTie(int[] winners) {
+		return winners[0] + winners[1] + winners[2] + winners[3] > 1;
+	}
 
 }
