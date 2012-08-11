@@ -2,7 +2,9 @@ package com.ansible.republic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -15,9 +17,12 @@ public class Game {
     int round;
     List<Player> players;
     List<ProposedCard> cards;
+	Map<String, Integer> metrics;
 
     public Game(int[] aiValues) {
         round = 0;
+
+		metrics = new HashMap<String, Integer>();
 
         players = new ArrayList<Player>();
         populatePlayers(aiValues);
@@ -65,6 +70,10 @@ public class Game {
             }
             if (roundVoteSum > 0) {
                 log.debug("Card passes! Final vote was: " + (roundVoteSum - 1));
+				if (metrics.containsKey(card.id)) {
+					metrics.put(card.id, metrics.get(card.id) + 1);
+				} else
+					metrics.put(card.id, 1);
                 scoreCard(card);
             } else {
                 log.debug("Card doesn't pass! Final vote was: "
@@ -133,8 +142,8 @@ public class Game {
         cards.add(new ProposedCard(2, 0, 0, 2));
         cards.add(new ProposedCard(2, 0, 0, 2));
 
-        cards.add(new ProposedCard(2, 5, 2, 2));
-        cards.add(new ProposedCard(2, 5, 2, 2));
+		cards.add(new ProposedCard(2, 5, 2, 2));
+		cards.add(new ProposedCard(2, 5, 2, 2));
 
         Collections.shuffle(cards);
     }

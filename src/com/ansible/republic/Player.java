@@ -18,35 +18,38 @@ public class Player {
     int score;
 
     /**
-     * 0: random
-     * 
-     * 1: pick lowest index
-     * 
-     * 2: pass if highest number is in front, then random
-     * 
-     * 3: fail if highest number not in front, then random
-     * 
-     * 4: rotate if highest number is one off, then random
-     * 
-     * 5: rotate if highest number is two off, then random
-     * 
-     * 6: rotate if highest number is three off, then random
-     * 
-     * 7: pass or meh if highest number in front, then random
-     * 
-     * 8: fail if highest number is in front, then random
-     * 
-     * 3 digit value: order that cards are played in
-     * 
-     * YAY = 1, NAY = 2, MEH = 3, ROTATE = 4
-     * 
-     * ai value of 123 = YAY, NAY, MEH played in that order
-     * 
-     * all 3 digit combos: 123, 132, 124, 142, 134, 143, 213, 214, 231, 241,
-     * 234, 243, 312, 321, 314, 341, 324, 342, 412, 421, 413, 431, 423, 432
-     * 
-     * ai value of 2341 = NAY, MEH, ROTATE, then YAY leads next round
-     */
+	 * 0: random
+	 * 
+	 * 1: pick lowest index
+	 * 
+	 * 2: pass if highest number is in front, then random
+	 * 
+	 * 3: fail if highest number not in front, then random
+	 * 
+	 * 4: rotate if highest number is one off, then random
+	 * 
+	 * 5: rotate if highest number is two off, then random
+	 * 
+	 * 6: rotate if highest number is three off, then random
+	 * 
+	 * 7: pass or meh if highest number in front, then random
+	 * 
+	 * 8: fail if highest number is in front, then random
+	 * 
+	 * 9: pass if highest, rotate if increases potential score, fail if lowest
+	 * number, then random
+	 * 
+	 * 3 digit value: order that cards are played in
+	 * 
+	 * YAY = 1, NAY = 2, MEH = 3, ROTATE = 4
+	 * 
+	 * ai value of 123 = YAY, NAY, MEH played in that order
+	 * 
+	 * all 3 digit combos: 123, 132, 124, 142, 134, 143, 213, 214, 231, 241,
+	 * 234, 243, 312, 321, 314, 341, 324, 342, 412, 421, 413, 431, 423, 432
+	 * 
+	 * ai value of 2341 = NAY, MEH, ROTATE, then YAY leads next round
+	 */
     int ai;
 
     public Player() {
@@ -103,6 +106,18 @@ public class Player {
         			return indexOfAction(ACTION.YAY);
         	}
         	return anyRandomHandCard();
+		} else if (ai == 9) {
+			if (isHighestValueFacingMe(proposal, seat)) {
+				if (isActionAvailable(ACTION.YAY))
+					return indexOfAction(ACTION.YAY);
+			} else if (doesRotateImproveMe(proposal, seat)) {
+				if (isActionAvailable(ACTION.ROTATE))
+					return indexOfAction(ACTION.ROTATE);
+			} else if (isLowestValueFacingMe(proposal, seat)) {
+				if (isActionAvailable(ACTION.NAY))
+					return indexOfAction(ACTION.NAY);
+			}
+			return anyRandomHandCard();
         } else if (ai >= 100 && ai < 1000) {
         
             // three digit order
@@ -140,6 +155,14 @@ public class Player {
     	return card.getHighest() == card.getValueOfSeat(seat);    	
     }
     
+	boolean doesRotateImproveMe(ProposedCard card, int seat) {
+		return card.getValueOfSeat(seat) < card.getRotatedValueOfSeat(seat);
+	}
+
+	boolean isLowestValueFacingMe(ProposedCard card, int seat) {
+		return card.getLowest() == card.getValueOfSeat(seat);
+	}
+
     int anyRandomHandCard() {
     	int rand = (int) (Math.random() * hand.size());
         return rand;

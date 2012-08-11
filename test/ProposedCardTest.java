@@ -17,6 +17,7 @@ public class ProposedCardTest {
 	@Test
 	public void testRotate() {
 		ProposedCard c = new ProposedCard(1, 2, 3, 4);
+		// Logger.getLogger(ProposedCardTest.class).info("card id: " + c.id);
 		c.rotate();
 		assertTrue(c.up == 2);
 		assertTrue(c.left == 3);
@@ -38,11 +39,33 @@ public class ProposedCardTest {
 	}
 	
 	@Test
+	public void testGetLowest() {
+		ProposedCard c = new ProposedCard(1, 2, 3, 4);
+		assertTrue(c.getLowest() == 1);
+		c.rotate();
+		assertTrue(c.getLowest() == 1);
+
+		c = new ProposedCard(3, 2, 2, 2);
+		assertTrue(c.getLowest() == 2);
+		c.rotate();
+		assertTrue(c.getLowest() == 2);
+	}
+
+	@Test
 	public void testGetSeat() {
 		ProposedCard c = new ProposedCard(1, 2, 3, 4);
 		assertTrue(c.getValueOfSeat(0) == 1);
 		assertTrue(c.getValueOfSeat(1) == 2);
 		assertTrue(c.getValueOfSeat(2) == 3);
 		assertTrue(c.getValueOfSeat(3) == 4);
+	}
+
+	@Test
+	public void testGetRotatedSeat() {
+		ProposedCard c = new ProposedCard(1, 2, 3, 4);
+		assertTrue(c.getRotatedValueOfSeat(0) == 2);
+		assertTrue(c.getRotatedValueOfSeat(1) == 3);
+		assertTrue(c.getRotatedValueOfSeat(2) == 4);
+		assertTrue(c.getRotatedValueOfSeat(3) == 1);
 	}
 }
