@@ -25,9 +25,32 @@ public class ProposedCard extends Card {
 		if (id == null) {
 			if (other.id != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!id.equals(other.id)
+				&& !areTwoIdsTransposesOfEachOther(id, other.id))
 			return false;
 		return true;
+	}
+
+	public boolean areTwoIdsTransposesOfEachOther(String id1, String id2) {
+		char[] chars = id2.toCharArray();
+		char temp;
+
+		int i = 0;
+
+		while (i < 3) {
+
+			temp = chars[0];
+			chars[0] = chars[1];
+			chars[1] = chars[2];
+			chars[2] = chars[3];
+			chars[3] = temp;
+
+			String modId2 = new String(chars);
+			if (id1.equals(modId2))
+				return true;
+
+		}
+		return false;
 	}
 
 	public ProposedCard(int u, int l, int d, int r) {

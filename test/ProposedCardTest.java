@@ -74,10 +74,13 @@ public class ProposedCardTest {
 		ProposedCard a = new ProposedCard(1, 2, 3, 4);
 		ProposedCard b = new ProposedCard(1, 2, 3, 4);
 		ProposedCard c = new ProposedCard(1, 2, 3, 5);
+		ProposedCard d = new ProposedCard(2, 3, 4, 1);
 
 		assertTrue(a.equals(b));
 		assertTrue(b.equals(a));
 		assertTrue(!a.equals(c));
+		assertTrue(a.equals(d));
+		assertTrue(!c.equals(d));
 
 	}
 }
