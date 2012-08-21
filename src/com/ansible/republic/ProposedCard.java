@@ -26,13 +26,17 @@ public class ProposedCard extends Card {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id)
-				&& !areTwoIdsTransposesOfEachOther(id, other.id))
+				&& (areTwoIdsTransposesOfEachOther(id, other.id) == null))
 			return false;
 		return true;
 	}
 
-	public boolean areTwoIdsTransposesOfEachOther(String id1, String id2) {
-		char[] chars = id2.toCharArray();
+	public static String areTwoIdsTransposesOfEachOther(String source,
+			String toTranspose) {
+		if (source.equals(toTranspose))
+			return toTranspose;
+
+		char[] chars = toTranspose.toCharArray();
 		char temp;
 
 		int i = 0;
@@ -46,11 +50,11 @@ public class ProposedCard extends Card {
 			chars[3] = temp;
 
 			String modId2 = new String(chars);
-			if (id1.equals(modId2))
-				return true;
-
+			if (source.equals(modId2))
+				return modId2;
+			i++;
 		}
-		return false;
+		return null;
 	}
 
 	public ProposedCard(int u, int l, int d, int r) {

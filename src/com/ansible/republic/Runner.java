@@ -1,5 +1,8 @@
 package com.ansible.republic;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,15 +57,38 @@ public class Runner {
 					ties++;
 
 				for (Entry<String, Integer> e : g.metrics.entrySet()) {
-					if (cardToPasses.containsKey(e.getKey()))
-						cardToPasses.put(e.getKey(),
-								cardToPasses.get(e.getKey()) + e.getValue());
-					else
+					String containsKey = null;
+					for (String key : cardToPasses.keySet()) {
+						String result = ProposedCard
+								.areTwoIdsTransposesOfEachOther(e.getKey(), key);
+						if (result != null) {
+							containsKey = key;
+							break;
+						}
+					}
+					if (containsKey != null) {
+						try {
+							cardToPasses.put(
+									containsKey,
+								cardToPasses.get(containsKey) + e.getValue());
+						} catch (NullPointerException exception) {
+							log.error("errorz");
+						}
+					} else
 						cardToPasses.put(e.getKey(), e.getValue());
 
-					if (cardToAppearances.containsKey(e.getKey()))
-						cardToAppearances.put(e.getKey(),
-								cardToAppearances.get(e.getKey()) + 1);
+					containsKey = null;
+					for (String key : cardToAppearances.keySet()) {
+						String result = ProposedCard
+								.areTwoIdsTransposesOfEachOther(e.getKey(), key);
+						if (result != null) {
+							containsKey = key;
+							break;
+						}
+					}
+					if (containsKey != null)
+						cardToAppearances.put(containsKey,
+								cardToAppearances.get(containsKey) + 1);
 					else
 						cardToAppearances.put(e.getKey(), 1);
 				}
@@ -78,12 +104,29 @@ public class Runner {
 				/ (double) (simulations * simulationsPerSet) * 100);
 		log.info("Number of tied rounds: " + ties + " = " + tiePercentage + "%");
 		log.info("Card results");
+
+		BufferedWriter out = null;
+		try {
+			out = new BufferedWriter(new FileWriter("output.txt"));
+		} catch (IOException e) {
+		}
 		for (Entry<String, Integer> e : cardToPasses.entrySet()) {
 			double winPercent = e.getValue().doubleValue()
 					/ cardToAppearances.get(e.getKey()) * 100;
 			log.info("Card " + e.getKey() + " -- Passes: " + e.getValue()
 					+ " -- Appearances: " + cardToAppearances.get(e.getKey())
 					+ " = " + winPercent + "%");
+			try {
+				out.write("x" + e.getKey() + "," + winPercent + "%\n");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		try {
+			out.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
     }
 
